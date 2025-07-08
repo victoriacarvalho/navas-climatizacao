@@ -1,6 +1,5 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
 import { db } from "../_lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../_lib/auth"
