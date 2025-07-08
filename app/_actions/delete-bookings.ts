@@ -1,26 +1,8 @@
+// app/_actions/delete-bookings.ts
 "use server"
 
 import { revalidatePath } from "next/cache"
 import { db } from "@/app/_lib/prisma"
-
-import { z } from "zod"
-
-export const deleteTransactionSchema = z.object({
-  transactionId: z.string().uuid(),
-})
-export type DeleteTransactionSchema = z.infer<typeof deleteTransactionSchema>
-
-export const deleteTransaction = async ({
-  transactionId,
-}: DeleteTransactionSchema) => {
-  await db.transaction.delete({
-    where: {
-      id: transactionId,
-    },
-  })
-  revalidatePath("/transactions")
-  revalidatePath("/")
-}
 
 export const deleteBooking = async (bookingId: string) => {
   await db.$transaction(async (prisma) => {
