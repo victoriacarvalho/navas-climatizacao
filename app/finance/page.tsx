@@ -4,11 +4,12 @@ import { isMatch, format } from "date-fns"
 import ExpensesPerCategory from "./components/expenses-per-category"
 import { authOptions } from "../_lib/auth"
 import { getDashboard } from "../_data/get-dashboard"
-import Header from "../_components/header" // Alterado de Navbar para Header
+import Header from "../_components/header"
 import TimeSelect from "./components/time-select"
 import SummaryCards from "./components/summary-cards"
 import TransactionsPieChart from "./components/transactions-pie-chart"
 import LastTransactions from "./components/last-transactions"
+import AddTransactionButton from "../_components/add-transaction-button"
 
 interface HomeProps {
   searchParams: {
@@ -35,13 +36,14 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <Header /> {/* Usando o Header com o SidebarSheet */}
+      <Header />
       <main className="flex-1 space-y-6 overflow-y-auto p-4 md:p-6">
         {/* Cabeçalho do Dashboard */}
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <div className="flex w-full items-center gap-3 sm:w-auto">
             <TimeSelect />
+            <AddTransactionButton /> {/* Adicionando o botão aqui */}
           </div>
         </div>
 

@@ -1,31 +1,21 @@
-// app/_actions/upsert-transaction.ts
 "use server"
 
 import { db } from "../_lib/prisma"
 import { revalidatePath } from "next/cache"
+import {
+  TransactionCategory,
+  TransactionPaymentMethod,
+  TransactionType,
+} from "@prisma/client"
 
+// Define a interface para os parâmetros da função
 interface UpsertTransactionParams {
   id?: string
   name: string
   amount: number
-  type: "DEPOSIT" | "EXPENSE"
-  category:
-    | "SERVICE_PAYMENT"
-    | "PARTS_PURCHASE"
-    | "TOOLS"
-    | "FUEL"
-    | "VEHICLE_MAINTENANCE"
-    | "SALARIES"
-    | "TAXES"
-    | "OTHER"
-  paymentMethod:
-    | "CREDIT_CARD"
-    | "DEBIT_CARD"
-    | "BANK_TRANSFER"
-    | "BANK_SLIP"
-    | "CASH"
-    | "PIX"
-    | "OTHER"
+  type: TransactionType
+  category: TransactionCategory
+  paymentMethod: TransactionPaymentMethod
   date: Date
 }
 
@@ -33,22 +23,29 @@ export const upsertTransaction = async (params: UpsertTransactionParams) => {
   const { id, ...data } = params
 
   if (id) {
+    // Se estiver atualizando, o navasId não é alterado
     await db.transaction.update({
       where: { id },
       data,
     })
   } else {
-    // Substitua pelo navasId real
-    const navasId = "clxmq4f6r000008l5g1j2h3k4"
+    // Busca a primeira empresa (Navas) para obter o ID
+    const navas = await db.navas.findFirst()
 
+    if (!navas) {
+      throw new Error("Nenhuma empresa encontrada para associar a transação.")
+    }
+
+    // Cria a transação usando o ID da empresa encontrado
     await db.transaction.create({
       data: {
         ...data,
-        navasId,
+        navasId: navas.id,
       },
     })
   }
 
+  // Revalida os caminhos para atualizar os dados na interface
   revalidatePath("/")
-  revalidatePath("/transactions")
+  revalidatePath("/finance")
 }

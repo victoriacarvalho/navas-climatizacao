@@ -1,5 +1,6 @@
-// app/_components/upsert-transaction-dialog.tsx
-import { Button } from "./ui/button"
+"use client"
+
+import { Button } from "@/app/_components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -8,8 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog"
+} from "@/app/_components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -17,8 +17,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form"
-import { Input } from "./ui/input"
+} from "@/app/_components/ui/form"
+import { Input } from "@/app/_components/ui/input"
 import { MoneyInput } from "./money-input"
 import {
   Select,
@@ -26,12 +26,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select"
+} from "@/app/_components/ui/select"
 import {
   TRANSACTION_CATEGORY_OPTIONS,
   TRANSACTION_PAYMENT_METHOD_OPTIONS,
   TRANSACTIONS_TYPE_OPTIONS,
-} from "../_constants/transactions"
+} from "@/app/_constants/transactions"
 import { z } from "zod"
 import {
   TransactionType,
@@ -40,6 +40,8 @@ import {
 } from "@prisma/client"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect } from "react"
+import { toast } from "sonner"
 import { upsertTransaction } from "../_actions/upsert-transactions"
 import { DatePicker } from "./ui/date.picker"
 
@@ -57,6 +59,7 @@ const formSchema = z.object({
   amount: z
     .number({
       required_error: "O valor é obrigatório.",
+      invalid_type_error: "O valor é obrigatório.",
     })
     .positive({
       message: "O valor deve ser positivo.",
@@ -77,7 +80,7 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-const UpsertTransactionDialog = ({
+export const UpsertTransactionDialog = ({
   isOpen,
   defaultValues,
   transactionId,
@@ -86,7 +89,7 @@ const UpsertTransactionDialog = ({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
-      amount: 50,
+      amount: undefined,
       category: TransactionCategory.OTHER,
       date: new Date(),
       name: "",
@@ -95,13 +98,22 @@ const UpsertTransactionDialog = ({
     },
   })
 
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues)
+    }
+  }, [defaultValues, form])
+
   const onSubmit = async (data: FormSchema) => {
     try {
       await upsertTransaction({ ...data, id: transactionId })
+      toast.success(
+        `Transação ${transactionId ? "atualizada" : "criada"} com sucesso!`,
+      )
       setIsOpen(false)
-      form.reset()
     } catch (error) {
       console.error(error)
+      toast.error("Erro ao salvar transação.")
     }
   }
 
@@ -113,11 +125,17 @@ const UpsertTransactionDialog = ({
       onOpenChange={(open) => {
         setIsOpen(open)
         if (!open) {
-          form.reset()
+          form.reset({
+            amount: undefined,
+            category: TransactionCategory.OTHER,
+            date: new Date(),
+            name: "",
+            paymentMethod: TransactionPaymentMethod.CASH,
+            type: TransactionType.EXPENSE,
+          })
         }
       }}
     >
-      <DialogTrigger asChild></DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -127,7 +145,8 @@ const UpsertTransactionDialog = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* O restante do seu formulário permanece o mesmo */}
             <FormField
               control={form.control}
               name="name"
@@ -135,7 +154,7 @@ const UpsertTransactionDialog = ({
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite o nome..." {...field} />
+                    <Input placeholder="Ex: Compra de Ferramentas" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,13 +168,11 @@ const UpsertTransactionDialog = ({
                   <FormLabel>Valor</FormLabel>
                   <FormControl>
                     <MoneyInput
-                      placeholder="Digite o valor..."
+                      placeholder="R$ 0,00"
                       value={field.value}
                       onValueChange={({ floatValue }) =>
                         field.onChange(floatValue)
                       }
-                      onBlur={field.onBlur}
-                      disabled={field.disabled}
                     />
                   </FormControl>
                   <FormMessage />
@@ -174,7 +191,7 @@ const UpsertTransactionDialog = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a verified email to display" />
+                        <SelectValue placeholder="Selecione o tipo..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -247,25 +264,27 @@ const UpsertTransactionDialog = ({
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Data</FormLabel>
-                  <DatePicker value={field.value} onChange={field.onChange} />
+                  <FormControl>
+                    <DatePicker value={field.value} onChange={field.onChange} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
               <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                >
+                <Button type="button" variant="outline">
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit" className="rounded-full">
-                {isUpdate ? "Atualizar" : "Adicionar"}
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting
+                  ? "Salvando..."
+                  : isUpdate
+                    ? "Atualizar"
+                    : "Adicionar"}
               </Button>
             </DialogFooter>
           </form>
@@ -274,5 +293,3 @@ const UpsertTransactionDialog = ({
     </Dialog>
   )
 }
-
-export default UpsertTransactionDialog
