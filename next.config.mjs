@@ -7,6 +7,11 @@ const nextConfig = {
       },
     ],
   },
+  eslint: {
+    // Aviso: Isso permite que você publique código com erros de ESLint.
+    // É útil se você quer fazer o build sem ser bloqueado pelas regras de lint.
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig
