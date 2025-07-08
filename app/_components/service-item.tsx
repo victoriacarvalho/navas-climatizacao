@@ -138,7 +138,6 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
 
       await createBooking({
         serviceId: service.id,
-        userId: (data?.user as any).id,
         observacoes: observacoes,
         date: newDate,
       })
