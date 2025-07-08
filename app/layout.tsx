@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Navas Climatização",
+  manifest: "/manifest.json", // Adicione esta linha
 }
 
 export default function RootLayout({

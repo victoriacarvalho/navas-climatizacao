@@ -1,0 +1,21 @@
+{
+  "name": "Navas Climatização",
+  "short_name": "Navas",
+  "description": "Aplicação para agendamentos e gestão da Navas Climatização.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#0c2b57",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
