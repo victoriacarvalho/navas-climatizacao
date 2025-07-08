@@ -27,17 +27,15 @@ const TransactionsPieChart = ({
   balance,
   month,
 }: TransactionsPieChartProps) => {
-  // Os dados do gráfico agora incluem apenas Ganhos e Despesas para uma visão mais clara
   const chartData = React.useMemo(
     () =>
       [
         { name: "Ganhos", value: totalDeposit },
         { name: "Despesas", value: totalExpense },
-      ].filter((item) => item.value > 0), // Filtra valores zerados
+      ].filter((item) => item.value > 0),
     [totalDeposit, totalExpense],
   )
 
-  // Cores para Ganhos e Despesas
   const COLORS = ["#00C49F", "#FF8042"]
 
   const monthName = React.useMemo(() => {
@@ -77,8 +75,12 @@ const TransactionsPieChart = ({
                   percent,
                   name,
                 }) => {
-                  // Correção: Verifica se midAngle está definido
-                  if (midAngle === undefined || percent === 0) {
+                  // Correção: Verifica se midAngle e percent estão definidos
+                  if (
+                    midAngle === undefined ||
+                    percent === undefined ||
+                    percent === 0
+                  ) {
                     return null
                   }
                   const radius = innerRadius + (outerRadius - innerRadius) * 1.2
