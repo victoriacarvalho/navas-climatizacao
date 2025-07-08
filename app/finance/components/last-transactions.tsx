@@ -1,8 +1,7 @@
-// app/_components/last-transactions.tsx
 import { Transaction } from "@prisma/client"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { TRANSACTION_CATEGORY_OPTIONS } from "@/app/_constants/transactions"
+import { TRANSACTION_CATEGORY_LABELS } from "@/app/_constants/transactions"
 import {
   Card,
   CardContent,
@@ -28,8 +27,8 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
                 <p className="font-bold">{transaction.name}</p>
                 <p className="text-sm text-gray-400">
                   {
-                    TRANSACTION_CATEGORY_OPTIONS[
-                      transaction.category as keyof typeof TRANSACTION_CATEGORY_OPTIONS
+                    TRANSACTION_CATEGORY_LABELS[
+                      transaction.category as keyof typeof TRANSACTION_CATEGORY_LABELS
                     ]
                   }
                 </p>

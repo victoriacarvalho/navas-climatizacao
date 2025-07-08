@@ -1,9 +1,20 @@
-// app/_constants/transactions.ts
 import {
   TransactionCategory,
   TransactionPaymentMethod,
   TransactionType,
 } from "@prisma/client"
+
+export const TRANSACTION_CATEGORY_LABELS: Record<TransactionCategory, string> =
+  {
+    SERVICE_PAYMENT: "Pagamento de Serviço",
+    PARTS_PURCHASE: "Compra de Peças",
+    TOOLS: "Ferramentas",
+    FUEL: "Combustível",
+    VEHICLE_MAINTENANCE: "Manutenção de Veículo",
+    SALARIES: "Salários",
+    TAXES: "Impostos",
+    OTHER: "Outros",
+  }
 
 export const TRANSACTIONS_TYPE_OPTIONS: {
   value: TransactionType
@@ -16,16 +27,12 @@ export const TRANSACTIONS_TYPE_OPTIONS: {
 export const TRANSACTION_CATEGORY_OPTIONS: {
   value: TransactionCategory
   label: string
-}[] = [
-  { value: "SERVICE_PAYMENT", label: "Pagamento de Serviço" },
-  { value: "PARTS_PURCHASE", label: "Compra de Peças" },
-  { value: "TOOLS", label: "Ferramentas" },
-  { value: "FUEL", label: "Combustível" },
-  { value: "VEHICLE_MAINTENANCE", label: "Manutenção de Veículo" },
-  { value: "SALARIES", label: "Salários" },
-  { value: "TAXES", label: "Impostos" },
-  { value: "OTHER", label: "Outros" },
-]
+}[] = (Object.keys(TRANSACTION_CATEGORY_LABELS) as TransactionCategory[]).map(
+  (category) => ({
+    value: category,
+    label: TRANSACTION_CATEGORY_LABELS[category],
+  }),
+)
 
 export const TRANSACTION_PAYMENT_METHOD_OPTIONS: {
   value: TransactionPaymentMethod

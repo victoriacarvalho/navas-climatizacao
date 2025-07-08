@@ -40,7 +40,6 @@ export const getDashboard = async (month: string) => {
           acc.push({
             category: transaction.category,
             total: Number(transaction.amount),
-            percentageOfTotal: 0,
           })
         }
         return acc
@@ -49,7 +48,10 @@ export const getDashboard = async (month: string) => {
     )
     .map((category) => ({
       ...category,
-      percentageOfTotal: Math.round((category.total / totalExpense) * 100),
+      percentageOfTotal:
+        totalExpense > 0
+          ? Math.round((category.total / totalExpense) * 100)
+          : 0,
     }))
 
   const lastTransactions: Transaction[] = transactions.slice(0, 5)

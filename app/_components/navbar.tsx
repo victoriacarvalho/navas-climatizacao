@@ -9,7 +9,13 @@ import { Button } from "./ui/button"
 import { Avatar, AvatarImage } from "./ui/avatar"
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
 import SignInDialog from "./sing-in-dialog"
-import { LogInIcon, LogOutIcon } from "lucide-react"
+import {
+  CalendarIcon,
+  DollarSignIcon,
+  HomeIcon,
+  LogInIcon,
+  LogOutIcon,
+} from "lucide-react"
 
 const Navbar = () => {
   const pathname = usePathname()
@@ -19,129 +25,152 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const handleLogoutClick = () => signOut()
 
+  const navLinks = [
+    { href: "/", label: "Início", icon: HomeIcon },
+    { href: "/bookings", label: "Agendamentos", icon: CalendarIcon },
+    { href: "/finance", label: "Financeiro", icon: DollarSignIcon },
+  ]
+
   return (
-    <nav className="flex items-center justify-between border-b border-solid px-8 py-4">
-      {/* ESQUERDA */}
-      <div className="flex items-center gap-10">
-        <Link href="/">
-          <Image
-            src="/logo.png"
-            width={170}
-            height={38}
-            alt="Navas Climatização"
-          />
-        </Link>
-        <div className="hidden gap-10 sm:flex">
-          <Link
-            href="/"
-            className={
-              pathname === "/"
-                ? "font-bold text-primary"
-                : "text-muted-foreground"
-            }
-          >
-            Dashboard
+    <header className="border-b border-solid">
+      <nav className="container mx-auto flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        {/* Lado Esquerdo: Logo e Links para Desktop */}
+        <div className="flex items-center gap-10">
+          <Link href="/">
+            <Image
+              src="/logo.png"
+              width={170}
+              height={38}
+              alt="Navas Climatização"
+            />
           </Link>
-          <Link
-            href="/bookings"
-            className={
-              pathname === "/bookings"
-                ? "font-bold text-primary"
-                : "text-muted-foreground"
-            }
-          >
-            Agendamentos
-          </Link>
-          <Link
-            href="/finance"
-            className={
-              pathname === "/finance"
-                ? "font-bold text-primary"
-                : "text-muted-foreground"
-            }
-          >
-            Financeiro
-          </Link>
+          <div className="hidden gap-8 sm:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  pathname === link.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* BOTÃO HAMBURGER PARA TELAS PEQUENAS */}
-      <button
-        className="p-2 text-muted-foreground sm:hidden"
-        onClick={toggleMenu}
-        aria-label="Toggle menu"
-      >
-        {isMenuOpen ? "✕" : "☰"}
-      </button>
-
-      {/* MENU LATERAL EM TELAS PEQUENAS */}
-      <div
-        className={`${
-          isMenuOpen ? "block" : "hidden"
-        } absolute right-8 top-16 z-10 rounded-md bg-card p-4 shadow-md sm:hidden`}
-      >
-        <Link
-          href="/"
-          className={
-            pathname === "/"
-              ? "block py-2 font-bold text-primary"
-              : "block py-2 text-muted-foreground"
-          }
-          onClick={() => setIsMenuOpen(false)}
-        >
-          Dashboard
-        </Link>
-        <Link
-          href="/bookings"
-          className={
-            pathname === "/bookings"
-              ? "block py-2 font-bold text-primary"
-              : "block py-2 text-muted-foreground"
-          }
-          onClick={() => setIsMenuOpen(false)}
-        >
-          Agendamentos
-        </Link>
-        <Link
-          href="/finance"
-          className={
-            pathname === "/finance"
-              ? "block py-2 font-bold text-primary"
-              : "block py-2 text-muted-foreground"
-          }
-          onClick={() => setIsMenuOpen(false)}
-        >
-          Financeiro
-        </Link>
-      </div>
-
-      {/* DIREITA */}
-      <div className="hidden items-center gap-3 sm:flex">
-        {data?.user ? (
-          <>
-            <Avatar>
-              <AvatarImage src={data.user.image ?? ""} />
-            </Avatar>
-            <span className="font-bold">{data.user.name}</span>
-            <Button variant="ghost" size="icon" onClick={handleLogoutClick}>
-              <LogOutIcon />
-            </Button>
-          </>
-        ) : (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <LogInIcon className="mr-2" />
-                Login
+        {/* Lado Direito (Desktop): Autenticação */}
+        <div className="hidden items-center gap-3 sm:flex">
+          {data?.user ? (
+            <>
+              <Avatar>
+                <AvatarImage src={data.user.image ?? ""} />
+              </Avatar>
+              <span className="text-sm font-medium">{data.user.name}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogoutClick}
+                aria-label="Sair"
+              >
+                <LogOutIcon className="h-5 w-5" />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="w-[90%]">
-              <SignInDialog />
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
-    </nav>
+            </>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <LogInIcon className="mr-2 h-4 w-4" />
+                  Login
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-[90%]">
+                <SignInDialog />
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+
+        {/* Botão Hamburger (Mobile) */}
+        <div className="sm:hidden">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={toggleMenu}
+            aria-label="Abrir menu"
+          >
+            {isMenuOpen ? (
+              <span className="text-xl">✕</span>
+            ) : (
+              <span className="text-xl">☰</span>
+            )}
+          </Button>
+        </div>
+      </nav>
+
+      {/* Menu Overlay (Mobile) */}
+      {isMenuOpen && (
+        <div className="absolute left-0 right-0 top-[85px] z-20 flex flex-col gap-2 border-b bg-card p-4 sm:hidden">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+                pathname === link.href
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <link.icon className="h-5 w-5" />
+              {link.label}
+            </Link>
+          ))}
+
+          <div className="my-4 border-t border-border"></div>
+
+          {/* Autenticação no Menu Mobile */}
+          {data?.user ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3 px-3 py-2">
+                <Avatar>
+                  <AvatarImage src={data.user.image ?? ""} />
+                </Avatar>
+                <span className="font-medium">{data.user.name}</span>
+              </div>
+              <Button
+                variant="ghost"
+                className="flex justify-start gap-3 px-3 py-2 text-base font-medium text-muted-foreground"
+                onClick={() => {
+                  handleLogoutClick()
+                  setIsMenuOpen(false)
+                }}
+              >
+                <LogOutIcon className="h-5 w-5" />
+                Sair da conta
+              </Button>
+            </div>
+          ) : (
+            <Dialog onOpenChange={(open) => !open && setIsMenuOpen(false)}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex justify-start gap-3 px-3 py-2 text-base font-medium text-muted-foreground"
+                >
+                  <LogInIcon className="h-5 w-5" />
+                  Fazer Login
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-[90%]">
+                <SignInDialog />
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+      )}
+    </header>
   )
 }
 

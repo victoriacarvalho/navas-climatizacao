@@ -53,7 +53,7 @@ const ChartContainer = React.forwardRef<
         ref={ref}
         className={cn(
           "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
-          className
+          className,
         )}
         {...props}
       >
@@ -69,7 +69,7 @@ ChartContainer.displayName = "Chart"
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([, config]) => config.theme || config.color
+    ([, config]) => config.theme || config.color,
   )
 
   if (!colorConfig.length) {
@@ -92,7 +92,7 @@ ${colorConfig
   })
   .join("\n")}
 }
-`
+`,
           )
           .join("\n"),
       }}
@@ -111,6 +111,8 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      payload?: any[]
+      label?: any
     }
 >(
   (
@@ -129,7 +131,7 @@ const ChartTooltipContent = React.forwardRef<
       nameKey,
       labelKey,
     },
-    ref
+    ref,
   ) => {
     const { config } = useChart()
 
@@ -180,7 +182,7 @@ const ChartTooltipContent = React.forwardRef<
         ref={ref}
         className={cn(
           "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
-          className
+          className,
         )}
       >
         {!nestLabel ? tooltipLabel : null}
@@ -195,7 +197,7 @@ const ChartTooltipContent = React.forwardRef<
                 key={item.dataKey}
                 className={cn(
                   "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
-                  indicator === "dot" && "items-center"
+                  indicator === "dot" && "items-center",
                 )}
               >
                 {formatter && item?.value !== undefined && item.name ? (
@@ -215,7 +217,7 @@ const ChartTooltipContent = React.forwardRef<
                               "w-0 border-[1.5px] border-dashed bg-transparent":
                                 indicator === "dashed",
                               "my-0.5": nestLabel && indicator === "dashed",
-                            }
+                            },
                           )}
                           style={
                             {
@@ -229,7 +231,7 @@ const ChartTooltipContent = React.forwardRef<
                     <div
                       className={cn(
                         "flex flex-1 justify-between leading-none",
-                        nestLabel ? "items-end" : "items-center"
+                        nestLabel ? "items-end" : "items-center",
                       )}
                     >
                       <div className="grid gap-1.5">
@@ -252,7 +254,7 @@ const ChartTooltipContent = React.forwardRef<
         </div>
       </div>
     )
-  }
+  },
 )
 ChartTooltipContent.displayName = "ChartTooltip"
 
@@ -260,15 +262,16 @@ const ChartLegend = RechartsPrimitive.Legend
 
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-      hideIcon?: boolean
-      nameKey?: string
-    }
+  React.ComponentProps<"div"> & {
+    payload?: any[]
+    verticalAlign?: "top" | "middle" | "bottom"
+    hideIcon?: boolean
+    nameKey?: string
+  }
 >(
   (
     { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
-    ref
+    ref,
   ) => {
     const { config } = useChart()
 
@@ -282,7 +285,7 @@ const ChartLegendContent = React.forwardRef<
         className={cn(
           "flex items-center justify-center gap-4",
           verticalAlign === "top" ? "pb-3" : "pt-3",
-          className
+          className,
         )}
       >
         {payload.map((item) => {
@@ -293,7 +296,7 @@ const ChartLegendContent = React.forwardRef<
             <div
               key={item.value}
               className={cn(
-                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
@@ -312,7 +315,7 @@ const ChartLegendContent = React.forwardRef<
         })}
       </div>
     )
-  }
+  },
 )
 ChartLegendContent.displayName = "ChartLegend"
 
@@ -320,7 +323,7 @@ ChartLegendContent.displayName = "ChartLegend"
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
-  key: string
+  key: string,
 ) {
   if (typeof payload !== "object" || payload === null) {
     return undefined

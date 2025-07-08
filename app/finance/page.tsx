@@ -4,7 +4,7 @@ import { isMatch, format } from "date-fns"
 import ExpensesPerCategory from "./components/expenses-per-category"
 import { authOptions } from "../_lib/auth"
 import { getDashboard } from "../_data/get-dashboard"
-import Navbar from "../_components/navbar"
+import Header from "../_components/header" // Alterado de Navbar para Header
 import TimeSelect from "./components/time-select"
 import SummaryCards from "./components/summary-cards"
 import TransactionsPieChart from "./components/transactions-pie-chart"
@@ -20,41 +20,57 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
+    // Redireciona para a página inicial se não estiver logado
     redirect("/")
   }
 
-  // Garantir que o mês tenha dois dígitos
+  // Garante que o mês tenha dois dígitos
   const monthIsInvalid = !month || !isMatch(month, "MM")
   if (monthIsInvalid) {
-    redirect(`?month=${format(new Date(), "MM")}`) // Formata o mês atual para MM
+    // Formata o mês atual para MM
+    redirect(`/finance?month=${format(new Date(), "MM")}`)
   }
 
   const dashboard = await getDashboard(month)
 
   return (
-    <>
-      <Navbar />
-      <div className="flex h-full flex-col space-y-6 overflow-hidden p-6">
-        <div className="flex justify-between">
+    <div className="flex h-full flex-col">
+      <Header /> {/* Usando o Header com o SidebarSheet */}
+      <main className="flex-1 space-y-6 overflow-y-auto p-4 md:p-6">
+        {/* Cabeçalho do Dashboard */}
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex items-center gap-3">
+          <div className="flex w-full items-center gap-3 sm:w-auto">
             <TimeSelect />
           </div>
         </div>
-        <div className="grid h-full grid-cols-[2fr,1fr] gap-6 overflow-hidden">
-          <div className="flex flex-col gap-6 overflow-hidden">
+
+        {/* Grade principal responsiva */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Coluna da Esquerda (ocupa 2/3 em telas grandes) */}
+          <div className="flex flex-col gap-6 lg:col-span-2">
             <SummaryCards month={month} {...dashboard} />
-            <div className="grid h-full grid-cols-3 grid-rows-1 gap-6 overflow-hidden">
-              <TransactionsPieChart {...dashboard} />
-              <ExpensesPerCategory
-                expensesPerCategory={dashboard.totalExpensePerCategory}
-              />
+
+            {/* Grade interna para gráficos (também responsiva) */}
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
+              <div className="xl:col-span-2">
+                <TransactionsPieChart {...dashboard} />
+              </div>
+              <div className="xl:col-span-3">
+                <ExpensesPerCategory
+                  expensesPerCategory={dashboard.totalExpensePerCategory}
+                />
+              </div>
             </div>
           </div>
-          <LastTransactions lastTransactions={dashboard.lastTransactions} />
+
+          {/* Coluna da Direita (ocupa 1/3 em telas grandes) */}
+          <div className="lg:col-span-1">
+            <LastTransactions lastTransactions={dashboard.lastTransactions} />
+          </div>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   )
 }
 
