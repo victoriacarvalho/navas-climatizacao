@@ -43,7 +43,7 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <div className="flex w-full items-center gap-3 sm:w-auto">
             <TimeSelect />
-            <AddTransactionButton /> {/* Adicionando o botão aqui */}
+            <AddTransactionButton />
           </div>
         </div>
 
@@ -56,7 +56,8 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
             {/* Grade interna para gráficos (também responsiva) */}
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
               <div className="xl:col-span-2">
-                <TransactionsPieChart {...dashboard} />
+                {/* Correção aqui */}
+                <TransactionsPieChart {...dashboard} month={month} />
               </div>
               <div className="xl:col-span-3">
                 <ExpensesPerCategory
