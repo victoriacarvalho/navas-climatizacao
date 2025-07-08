@@ -51,7 +51,7 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Coluna da Esquerda (ocupa 2/3 em telas grandes) */}
           <div className="flex flex-col gap-6 lg:col-span-2">
-            <SummaryCards month={month} {...dashboard} />
+            <SummaryCards {...dashboard} />
 
             {/* Grade interna para gráficos (também responsiva) */}
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
